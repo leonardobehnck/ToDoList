@@ -1,4 +1,4 @@
-package com.example.todolist.repository
+package com.example.todolist.data
 
 import java.util.UUID
 

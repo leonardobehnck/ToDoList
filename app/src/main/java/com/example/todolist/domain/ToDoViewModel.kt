@@ -1,8 +1,8 @@
-package com.example.todolist
+package com.example.todolist.domain
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.example.todolist.repository.ToDoItem
+import com.example.todolist.data.ToDoItem
 
 class ToDoViewModel : ViewModel() {
 
@@ -22,5 +22,9 @@ class ToDoViewModel : ViewModel() {
     else {
       selectedItems.add(toggledItem)
     }
+  }
+  fun deleteItems() {
+    todoItems.removeAll(selectedItems)
+    selectedItems.clear()
   }
 }
