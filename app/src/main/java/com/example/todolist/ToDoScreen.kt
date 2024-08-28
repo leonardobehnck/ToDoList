@@ -6,12 +6,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -22,6 +22,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextDecoration
@@ -37,27 +39,52 @@ import com.example.todolist.data.ToDoItem
 fun ToDoListScreen(
   items: List<ToDoItem>,
   selectedItems: List<ToDoItem>,
-  onAddItem: () -> Unit,
+  onAddItem: (ToDoItem) -> Unit,
   onToggleItem: (ToDoItem) -> Unit,
   onDeleteItems: () -> Unit,
 ) {
 
-  Scaffold(topBar = {
-    TopAppBar(title = { Text(text = "Lista de Tarefas") },
-      actions = {
-        IconButton(
-          onClick = { onDeleteItems }, Modifier.padding(horizontal = 8.dp)
-        ) {
-          Icon(Icons.Rounded.Delete, contentDescription = "Deletar item")
+  val (text, onNameChange) = rememberSaveable { mutableStateOf("") }
+
+  val submitItem = {
+    if (text.isNotBlank()) {
+      onAddItem(ToDoItem(text))
+      onNameChange("")
+    }
+  }
+
+  Scaffold(modifier = Modifier.fillMaxSize(), topBar = {}) {
+    Column(Modifier.fillMaxSize()) {
+      TopAppBar(title = { Text(text = "Lista de Tarefas") },
+        actions = {
+          IconButton(
+            onClick = onDeleteItems,
+            Modifier.padding(horizontal = 8.dp)
+          ) {
+            Icon(Icons.Rounded.Delete, contentDescription = "Deletar item")
+          }
+        }
+      )
+      LazyColumn(
+        Modifier
+          .fillMaxWidth()
+          .weight(1.0f)
+      ) {
+        items(items = items) { todoItem ->
+          // Verificar
+          val selected = selectedItems.find { it == todoItem } != null
+          ToDoRow(toDoItem = todoItem, selected, doToggle = onToggleItem)
         }
       }
-    )
-  }) { }
+
+      ToDoFieldAndButton(text = text, onTextChange = onNameChange, onAddItem = submitItem)
+    }
+  }
 }
 
 
 @Composable
-fun ToDoScreen(
+fun ToDoRow(
   toDoItem: ToDoItem,
   selected: Boolean,
   doToggle: (ToDoItem) -> Unit
@@ -80,7 +107,7 @@ fun ToDoScreen(
           MaterialTheme.typography.titleMedium
         }
       )
-      Checkbox(checked = selected, onCheckedChange = { doToggle(toDoItem) })
+      Checkbox(checked = selected, onCheckedChange = { doToggle })
     }
     HorizontalDivider()
   }
@@ -96,7 +123,8 @@ fun ToDoFieldAndButton(
   HorizontalDivider(Modifier.fillMaxWidth())
   Row(Modifier.fillMaxWidth()) {
     TextField(
-      value = text, onValueChange = onTextChange,
+      value = text,
+      onValueChange = onTextChange,
       singleLine = true,
       maxLines = 1,
       placeholder = { Text(text = "Adicione um item") },
@@ -111,6 +139,7 @@ fun ToDoFieldAndButton(
         .align(Alignment.CenterVertically)
     ) {
       Icon(Icons.AutoMirrored.Rounded.Send, contentDescription = "Adicionar")
+
     }
   }
 }
@@ -119,12 +148,11 @@ fun ToDoFieldAndButton(
 @Composable
 fun ToDoListScreenPreview() {
   ToDoListScreen(
-    items = listOf(),
+    items = listOf(ToDoItem("item1"), ToDoItem("item2"), ToDoItem("item3"), ToDoItem("item4")),
     selectedItems = listOf(),
     onAddItem = {},
     onToggleItem = {}
   ) {
-
   }
 }
 
@@ -132,7 +160,7 @@ fun ToDoListScreenPreview() {
 @Preview(showBackground = true)
 @Composable
 fun ToDoScreenPreview() {
-  ToDoScreen(toDoItem = ToDoItem("item de exemplo"), true, {})
+  ToDoRow(toDoItem = ToDoItem("item de exemplo"), true, {})
 }
 
 @Preview(showBackground = true)

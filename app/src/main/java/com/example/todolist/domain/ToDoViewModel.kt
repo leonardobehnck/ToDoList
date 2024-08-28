@@ -14,6 +14,10 @@ class ToDoViewModel : ViewModel() {
     todoItems.add(newItem)
   }
 
+  fun deleteItem(itemToDelete: ToDoItem) {
+    todoItems.remove(itemToDelete)
+  }
+
   fun toggleItem(toggledItem: ToDoItem) {
     val foundItem = selectedItems.find { it == toggledItem }
     if (foundItem == null) {
@@ -23,6 +27,7 @@ class ToDoViewModel : ViewModel() {
       selectedItems.add(toggledItem)
     }
   }
+
   fun deleteItems() {
     todoItems.removeAll(selectedItems)
     selectedItems.clear()
