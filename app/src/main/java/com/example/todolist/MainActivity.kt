@@ -35,9 +35,9 @@ class MainActivity : ComponentActivity() {
     ToDoListScreen(
       items = toDoViewModel.todoItems,
       selectedItems = toDoViewModel.selectedItems,
-      onAddItem = { toDoViewModel::addItem },
-      onToggleItem = { toDoViewModel::toggleItem },
-      onDeleteItems = { toDoViewModel::deleteItems },
+      onAddItem =  toDoViewModel::addItem,
+      onToggleItem =  toDoViewModel::toggleItem,
+      onDeleteItems =  toDoViewModel::deleteItems,
     )
   }
 }

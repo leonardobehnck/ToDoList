@@ -19,6 +19,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "ToDoList"
+rootProject.name = "Lista de Tarefas"
 include(":app")
  

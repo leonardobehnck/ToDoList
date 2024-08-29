@@ -146,15 +146,3 @@ fun ToDoFieldAndButton(
     }
   }
 }
-
-@Preview
-@Composable
-fun ToDoListScreenPreview() {
-  ToDoListScreen(
-    items = listOf(ToDoItem("item1"), ToDoItem("item2"), ToDoItem("item3"), ToDoItem("item4")),
-    selectedItems = listOf(),
-    onAddItem = {},
-    onToggleItem = {}
-  ) {
-  }
-}
