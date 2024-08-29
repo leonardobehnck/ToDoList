@@ -2,10 +2,13 @@ package com.example.todolist
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -30,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -125,7 +129,7 @@ fun ToDoFieldAndButton(
 ) {
 
   HorizontalDivider(Modifier.fillMaxWidth())
-  Row(Modifier.fillMaxWidth()) {
+  Row(Modifier.fillMaxWidth() .height(100.dp)) {
     TextField(
       value = text,
       onValueChange = onTextChange,
@@ -140,9 +144,14 @@ fun ToDoFieldAndButton(
       onClick = onAddItem,
       modifier = Modifier
         .padding(horizontal = 6.dp)
-        .align(Alignment.CenterVertically)
+
     ) {
       Icon(Icons.AutoMirrored.Rounded.Send, contentDescription = "Adicionar")
     }
   }
+}
+@Preview
+@Composable
+fun ToDoListScreenPreview() {
+  ToDoListScreen( items = listOf(), selectedItems = listOf(), onAddItem = {}, onToggleItem = {}, onDeleteItems = {})
 }
