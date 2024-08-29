@@ -1,6 +1,7 @@
 package com.example.todolist
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +23,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,11 +48,11 @@ fun ToDoListScreen(
   onDeleteItems: () -> Unit,
 ) {
 
-  val (text, onNameChange) = rememberSaveable { mutableStateOf("") }
+  val (name, onNameChange) = rememberSaveable { mutableStateOf("") }
 
   val submitItem = {
-    if (text.isNotBlank()) {
-      onAddItem(ToDoItem(text))
+    if (name.isNotBlank()) {
+      onAddItem(ToDoItem(name))
       onNameChange("")
     }
   }
@@ -65,19 +69,19 @@ fun ToDoListScreen(
           }
         }
       )
+      HorizontalDivider()
       LazyColumn(
         Modifier
           .fillMaxWidth()
           .weight(1.0f)
       ) {
         items(items = items) { todoItem ->
-          // Verificar
           val selected = selectedItems.find { it == todoItem } != null
-          ToDoRow(toDoItem = todoItem, selected, doToggle = onToggleItem)
+          ToDoRow(toDoItem = todoItem, selected = selected, doToggle = onToggleItem)
         }
       }
 
-      ToDoFieldAndButton(text = text, onTextChange = onNameChange, onAddItem = submitItem)
+      ToDoFieldAndButton(text = name, onTextChange = onNameChange, onAddItem = submitItem)
     }
   }
 }
@@ -107,7 +111,7 @@ fun ToDoRow(
           MaterialTheme.typography.titleMedium
         }
       )
-      Checkbox(checked = selected, onCheckedChange = { doToggle })
+      Checkbox(checked = selected, onCheckedChange = { doToggle(toDoItem) })
     }
     HorizontalDivider()
   }
@@ -139,7 +143,6 @@ fun ToDoFieldAndButton(
         .align(Alignment.CenterVertically)
     ) {
       Icon(Icons.AutoMirrored.Rounded.Send, contentDescription = "Adicionar")
-
     }
   }
 }
@@ -154,17 +157,4 @@ fun ToDoListScreenPreview() {
     onToggleItem = {}
   ) {
   }
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun ToDoScreenPreview() {
-  ToDoRow(toDoItem = ToDoItem("item de exemplo"), true, {})
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ToDoFieldAndButtonPreview() {
-  ToDoFieldAndButton(text = "", onTextChange = {}, onAddItem = {})
 }
