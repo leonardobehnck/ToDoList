@@ -42,15 +42,4 @@ class MainActivity : ComponentActivity() {
     )
   }
 }
-@Preview(showBackground = true)
-@Composable
-fun MainScreen() {
-  ToDoListScreen(
-    items = listOf(),
-    selectedItems = listOf(),
-    onAddItem =  {},
-    onToggleItem =  {},
-    onDeleteItems = {  },
-  )
-}
 
