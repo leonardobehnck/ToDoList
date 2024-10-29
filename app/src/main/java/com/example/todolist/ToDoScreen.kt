@@ -3,12 +3,15 @@ package com.example.todolist
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.Delete
@@ -18,7 +21,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
@@ -38,113 +40,120 @@ import com.example.todolist.data.ToDoItem
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToDoListScreen(
-  items: List<ToDoItem>,
-  selectedItems: List<ToDoItem>,
-  onAddItem: (ToDoItem) -> Unit,
-  onToggleItem: (ToDoItem) -> Unit,
-  onDeleteItems: () -> Unit,
+    items: List<ToDoItem>,
+    selectedItems: List<ToDoItem>,
+    onAddItem: (ToDoItem) -> Unit,
+    onToggleItem: (ToDoItem) -> Unit,
+    onDeleteItems: () -> Unit,
 ) {
 
-  val (name, onNameChange) = rememberSaveable { mutableStateOf("") }
+    val (name, onNameChange) = rememberSaveable { mutableStateOf("") }
 
-  val submitItem = {
-    if (name.isNotBlank()) {
-      onAddItem(ToDoItem(name))
-      onNameChange("")
-    }
-  }
-
-  Scaffold(modifier = Modifier.fillMaxSize(), topBar = {}) {
-    Column(Modifier.fillMaxSize()) {
-      TopAppBar(title = { Text(text = "Lista de Tarefas") },
-        actions = {
-          IconButton(
-            onClick = onDeleteItems,
-            Modifier.padding(horizontal = 8.dp)
-          ) {
-            Icon(Icons.Rounded.Delete, contentDescription = "Deletar item")
-          }
+    val submitItem = {
+        if (name.isNotBlank()) {
+            onAddItem(ToDoItem(name))
+            onNameChange("")
         }
-      )
-      HorizontalDivider()
-      LazyColumn(
-        Modifier
-          .fillMaxWidth()
-          .weight(1.0f)
-      ) {
-        items(items = items) { todoItem ->
-          val selected = selectedItems.find { it == todoItem } != null
-          ToDoRow(toDoItem = todoItem, selected = selected, doToggle = onToggleItem)
-        }
-      }
-
-      ToDoFieldAndButton(text = name, onTextChange = onNameChange, onAddItem = submitItem)
     }
-  }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        TopAppBar(title = { Text(text = "Lista de Tarefas") },
+            actions = {
+                IconButton(
+                    onClick = onDeleteItems,
+                    Modifier.padding(horizontal = 8.dp)
+                ) {
+                    Icon(Icons.Rounded.Delete, contentDescription = "Deletar item")
+                }
+            }
+        )
+        HorizontalDivider()
+        Column {
+            LazyColumn {
+                items(items = items) { todoItem ->
+                    val selected = selectedItems.find { it == todoItem } != null
+                    ToDoRow(toDoItem = todoItem, selected = selected, doToggle = onToggleItem)
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            ToDoFieldAndButton(text = name, onTextChange = onNameChange, onAddItem = submitItem)
+        }
+    }
 }
 
 
 @Composable
 fun ToDoRow(
-  toDoItem: ToDoItem,
-  selected: Boolean,
-  doToggle: (ToDoItem) -> Unit
+    toDoItem: ToDoItem,
+    selected: Boolean,
+    doToggle: (ToDoItem) -> Unit
 
 ) {
-  Column(modifier = Modifier.fillMaxSize()) {
-    Row(modifier = Modifier.padding(6.dp), verticalAlignment = Alignment.CenterVertically) {
-      Text(
-        text = toDoItem.name,
-        modifier = Modifier
-          .padding(horizontal = 8.dp)
-          .weight(1.0f),
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        style = if (selected) {
-          MaterialTheme.typography.titleMedium.copy(
-            textDecoration = TextDecoration.LineThrough
-          )
-        } else {
-          MaterialTheme.typography.titleMedium
+    Column(modifier = Modifier.fillMaxSize()) {
+        Row(modifier = Modifier.padding(6.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = toDoItem.name,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .weight(1.0f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = if (selected) {
+                    MaterialTheme.typography.titleMedium.copy(
+                        textDecoration = TextDecoration.LineThrough
+                    )
+                } else {
+                    MaterialTheme.typography.titleMedium
+                }
+            )
+            Checkbox(checked = selected, onCheckedChange = { doToggle(toDoItem) })
         }
-      )
-      Checkbox(checked = selected, onCheckedChange = { doToggle(toDoItem) })
+        HorizontalDivider()
     }
-    HorizontalDivider()
-  }
 }
 
 @Composable
 fun ToDoFieldAndButton(
-  text: String,
-  onTextChange: (String) -> Unit,
-  onAddItem: () -> Unit,
+    text: String,
+    onTextChange: (String) -> Unit,
+    onAddItem: () -> Unit,
 ) {
 
-  HorizontalDivider(Modifier.fillMaxWidth())
-  Row(Modifier.fillMaxWidth() .height(100.dp)) {
-    TextField(
-      value = text,
-      onValueChange = onTextChange,
-      singleLine = true,
-      maxLines = 1,
-      placeholder = { Text(text = "Adicione um item") },
-      textStyle = MaterialTheme.typography.titleMedium,
-      modifier = Modifier
-        .weight(1.0f)
-    )
-    IconButton(
-      onClick = onAddItem,
-      modifier = Modifier
-        .padding(horizontal = 6.dp)
-
+    HorizontalDivider(Modifier.fillMaxWidth())
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(100.dp)
     ) {
-      Icon(Icons.AutoMirrored.Rounded.Send, contentDescription = "Adicionar")
+
+        TextField(
+            value = text,
+            onValueChange = onTextChange,
+            singleLine = true,
+            maxLines = 1,
+            placeholder = { Text(text = "Adicione um item") },
+            textStyle = MaterialTheme.typography.titleMedium,
+            modifier = Modifier
+                .weight(1.0f)
+        )
+        IconButton(
+            onClick = onAddItem,
+            modifier = Modifier
+                .padding(horizontal = 6.dp)
+
+        ) {
+            Icon(Icons.AutoMirrored.Rounded.Send, contentDescription = "Adicionar")
+        }
     }
-  }
 }
+
 @Preview
 @Composable
 fun ToDoListScreenPreview() {
-  ToDoListScreen( items = listOf(), selectedItems = listOf(), onAddItem = {}, onToggleItem = {}, onDeleteItems = {})
+    ToDoListScreen(
+        items = listOf(),
+        selectedItems = listOf(),
+        onAddItem = {},
+        onToggleItem = {},
+        onDeleteItems = {})
 }
